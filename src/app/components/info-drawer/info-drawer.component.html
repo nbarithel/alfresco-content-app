@@ -3,7 +3,19 @@
 </div>
 <ng-container *ngIf="!isLoading && !!displayNode">
     <adf-info-drawer [title]="'APP.INFO_DRAWER.TITLE' | translate">
-        <adf-info-drawer-tab [label]="'APP.INFO_DRAWER.TABS.PROPERTIES' | translate">
+
+        <ng-container *ngIf="!node.entry.isFolder">
+            <adf-info-drawer-tab [label]="node.entry.name">
+                <adf-viewer
+                        [showViewer]="true"
+                        [overlayMode]="false"
+                        [showToolbar]="false"
+                        [nodeId]="node.entry.id">
+                    </adf-viewer>
+            </adf-info-drawer-tab>
+        </ng-container>
+
+        <adf-info-drawer-tab [label]="'APP.INFO_DRAWER.TABS.PROPERTIES' | translate | uppercase">
             <adf-content-metadata-card
                 [readOnly]="!canUpdateNode()"
                 [displayEmpty]="canUpdateNode()"
@@ -12,7 +24,7 @@
             </adf-content-metadata-card>
         </adf-info-drawer-tab>
 
-        <adf-info-drawer-tab [label]="'APP.INFO_DRAWER.TABS.VERSIONS' | translate">
+        <adf-info-drawer-tab [label]="'APP.INFO_DRAWER.TABS.VERSIONS' | translate | uppercase">
             <ng-container *ngIf="isFileSelected;else empty">
                 <adf-version-manager
                     [showComments]="'adf-version-manager.allowComments' | adfAppConfig:true"
