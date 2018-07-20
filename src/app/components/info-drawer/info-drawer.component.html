@@ -1,16 +1,18 @@
 <div *ngIf="isLoading">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
-<ng-container *ngIf="!isLoading && !!displayNode">
-    <adf-info-drawer [title]="'APP.INFO_DRAWER.TITLE' | translate">
 
-        <ng-container *ngIf="!node.entry.isFolder">
-            <adf-info-drawer-tab [label]="node.entry.name">
+<ng-container *ngIf="!isLoading && !!displayNode">
+
+    <adf-info-drawer (currentTab)="setCurrentTab($event)" [title]="'APP.INFO_DRAWER.TITLE' | translate" [selectedIndex] = "selectedIndex">
+
+        <ng-container *ngFor="let selectionNode of selectionNodes">
+            <adf-info-drawer-tab [label]="selectionNode.name">
                 <adf-viewer
                         [showViewer]="true"
                         [overlayMode]="false"
                         [showToolbar]="false"
-                        [nodeId]="node.entry.id">
+                        [nodeId]="selectionNode.id">
                     </adf-viewer>
             </adf-info-drawer-tab>
         </ng-container>

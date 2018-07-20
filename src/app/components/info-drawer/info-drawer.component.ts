@@ -27,6 +27,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { MinimalNodeEntity, MinimalNodeEntryEntity } from 'alfresco-js-api';
 import { NodePermissionService } from '../../common/services/node-permission.service';
 import { ContentApiService } from '../../services/content-api.service';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
     selector: 'aca-info-drawer',
@@ -37,6 +38,12 @@ export class InfoDrawerComponent implements OnChanges {
 
     @Input() node: MinimalNodeEntity;
 
+    @Input() tabLimit: number = 3;
+
+    selectionNodes: SelectionNode[] = new Array();
+
+    selectedIndex: number;
+
     isLoading = false;
     displayNode: MinimalNodeEntryEntity;
 
@@ -46,6 +53,39 @@ export class InfoDrawerComponent implements OnChanges {
         }
 
         return false;
+    }
+
+    setCurrentTab(event: number) {
+        this.selectedIndex = event;
+    }
+
+    private updateSelectionNodeList(): void {
+        const entry = this.node.entry;
+        if (entry.isFile) {
+            let alreadyIn: boolean = false;
+            for (let selectionNode of this.selectionNodes) {
+                if (entry.id == selectionNode.id) {
+                    alreadyIn = true;
+                    break;
+                }
+            }
+            if (!alreadyIn) {
+                if (!this.isSelectionNodeListFull()) {
+                    this.selectionNodes.unshift({'id': entry.id, 'name': entry.name});
+                    this.selectedIndex = 0;
+                } else {
+                    this.snackBar.open("L'affichage est limité à " + this.tabLimit + " prévisualisations simultanées", '', { panelClass: 'warning-snackbar', duration: 2500 });
+                }
+            } else {
+                this.selectedIndex = this.selectionNodes.findIndex(selectionNode => selectionNode.id === entry.id);
+            }
+        } else {
+            this.snackBar.open("Pas de prévisualisation sur un répertoire", '', { panelClass: 'warning-snackbar', duration: 2500 });
+        }
+    }
+
+    private isSelectionNodeListFull(): boolean {
+        return this.selectionNodes.length >= this.tabLimit;
     }
 
     get isFileSelected(): boolean {
@@ -62,11 +102,13 @@ export class InfoDrawerComponent implements OnChanges {
 
     constructor(
         public permission: NodePermissionService,
-        private contentApi: ContentApiService
+        private contentApi: ContentApiService,
+        private snackBar: MatSnackBar
     ) {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.node) {
+            this.updateSelectionNodeList();
             const entry = this.node.entry;
             if (entry.nodeId) {
                 this.loadNodeInfo(entry.nodeId);
@@ -108,4 +150,9 @@ export class InfoDrawerComponent implements OnChanges {
             );
         }
     }
+}
+
+export class SelectionNode {
+    id: string;
+    name: string;
 }
