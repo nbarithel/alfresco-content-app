@@ -230,6 +230,8 @@
         },
         "INFO_DRAWER": {
             "TITLE": "Details",
+            "TAB_LIMIT_WARNING": "The display is restricted to {{ limit }} simultaneous previews" ,
+            "FOLDER_VIEW": "No preview available for repertory",
             "TABS": {
                 "PROPERTIES": "Properties",
                 "VERSIONS": "Versions"

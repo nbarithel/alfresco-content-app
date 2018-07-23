@@ -230,6 +230,8 @@
     },
     "INFO_DRAWER": {
       "TITLE": "Détails",
+      "TAB_LIMIT_WARNING": "L'affichage est limité à {{ limit }} prévisualisations simultanées" ,
+      "FOLDER_VIEW": "Pas de prévisualisation sur un répertoire",
       "TABS": {
         "PROPERTIES": "Propriétés",
         "VERSIONS": "Versions"

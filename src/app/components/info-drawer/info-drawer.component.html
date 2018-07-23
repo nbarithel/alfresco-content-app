@@ -7,13 +7,13 @@
     <adf-info-drawer (currentTab)="setCurrentTab($event)" [title]="'APP.INFO_DRAWER.TITLE' | translate" [selectedIndex] = "selectedIndex">
 
         <ng-container *ngFor="let selectionNode of selectionNodes">
-            <adf-info-drawer-tab [label]="selectionNode.name">
+            <adf-info-drawer-tab [label]="selectionNode.name" >
                 <adf-viewer
                         [showViewer]="true"
                         [overlayMode]="false"
                         [showToolbar]="false"
                         [nodeId]="selectionNode.id">
-                    </adf-viewer>
+                </adf-viewer>
             </adf-info-drawer-tab>
         </ng-container>
 
