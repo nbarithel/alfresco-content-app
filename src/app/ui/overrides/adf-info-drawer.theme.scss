@@ -24,6 +24,19 @@
                     .mat-tab-label {
                         color: mat-color($accent);
                         text-transform: none;
+                        padding: 0 0px;
+
+                        .mouseInteraction {
+                            display: inline-flex;
+                            flex-grow: 1;
+                            height: 100%;
+                            > * {
+                                flex-grow:1;
+                            }
+                            .mat-icon-button {
+                                color: mat-color($warn)!important;
+                            }
+                        }
                     }
 
                     .mat-tab-body-wrapper {

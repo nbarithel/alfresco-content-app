@@ -4,10 +4,10 @@
 
 <ng-container *ngIf="!isLoading && !!displayNode">
 
-    <adf-info-drawer (currentTab)="setCurrentTab($event)" [title]="'APP.INFO_DRAWER.TITLE' | translate" [selectedIndex] = "selectedIndex">
+    <adf-info-drawer (currentTab)="setCurrentTab($event)" (closeTab)="closeTab()"  [title]="'APP.INFO_DRAWER.TITLE' | translate" [selectedIndex] = "selectedIndex">
 
         <ng-container *ngFor="let selectionNode of selectionNodes">
-            <adf-info-drawer-tab [label]="selectionNode.name" >
+            <adf-info-drawer-tab [label]="selectionNode.name" [icon]="mimeType | adfMimeTypeIcon" [closeable]="selectionNode.closeable" >
                 <adf-viewer
                         [showViewer]="true"
                         [overlayMode]="false"

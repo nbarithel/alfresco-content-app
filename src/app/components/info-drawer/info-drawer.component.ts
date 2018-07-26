@@ -51,6 +51,8 @@ export class InfoDrawerComponent implements OnInit, OnChanges {
     isLoading = false;
     displayNode: MinimalNodeEntryEntity;
 
+    mimeType: string;
+
     // Dès l'initialisation de la vue, chargement de la traduction dans la langue locale
     ngOnInit() {
         this.translation.get("APP.INFO_DRAWER.FOLDER_VIEW").subscribe(translation => {
@@ -72,20 +74,32 @@ export class InfoDrawerComponent implements OnInit, OnChanges {
     // Dès que l'utilisateur clique sur un onglet, l'index courant se met à jour.
     setCurrentTab(event: number) {
         this.selectedIndex = event;
+        this.refreshCloseableSelectionNodes();
+    }
+
+    // Met à jour la possibilité de fermer les différents onglets
+    private refreshCloseableSelectionNodes(): void {
+        let index: number;
+        for (index = 0 ; index < this.selectionNodes.length ; index++) {
+            let current: boolean = index == this.selectedIndex;
+            this.selectionNodes[index].closeable = current;
+        }
     }
 
     // Ferme l'onglet correspondant à l'index courant.
     closeTab(){
         this.selectionNodes.splice(this.selectedIndex, 1);
+        this.refreshCloseableSelectionNodes();
     }
 
     // Met à jour la liste des onglets
-    private updateSelectionNodeList(): void {
+    private updateSelectionNodes(): void {
         const entry = this.node.entry;
         // Si le document est un fichier, il y a deux cas possibles:
         // - soit le document est déjà présent dans un onglet
         // - soit il n'est pas présent
         if (entry.isFile) {
+            this.mimeType = this.node.entry.content.mimeType;
             let alreadyIn: boolean = false;
             // On regarde si le document est déjà présent dans un onglet
             for (let selectionNode of this.selectionNodes) {
@@ -98,8 +112,8 @@ export class InfoDrawerComponent implements OnInit, OnChanges {
             if (!alreadyIn) {
                 // On regarde si le nombre d'onglet est à son maximum puis deux cas se présentent :
                 // si on peut encore ajouter un onglet alors on le fait
-                if (!this.isSelectionNodeListFull()) {
-                    this.selectionNodes.unshift({id: entry.id, name: entry.name});
+                if (this.selectionNodes.length <= this.tabLimit) {
+                    this.selectionNodes.unshift({id: entry.id, name: entry.name, closeable: true});
                     this.selectedIndex = 0;
                 // sinon on affiche un warning prévenant l'utilisateur qu'il est à son maximum d'onglet ouvert
                 } else {
@@ -109,6 +123,7 @@ export class InfoDrawerComponent implements OnInit, OnChanges {
             } else {
                 this.selectedIndex = this.selectionNodes.findIndex(selectionNode => selectionNode.id === entry.id);
             }
+        this.refreshCloseableSelectionNodes();
         } else {
             // On n'affiche pas le message dans deux cas :
             // - folderInfo n'est pas chargé car le NgOnInit est appelé après le NgOnChange
@@ -117,11 +132,6 @@ export class InfoDrawerComponent implements OnInit, OnChanges {
                 this.snackBar.open(this.folderInfo, '', {panelClass: 'info-snackbar', duration: 2500});
             }
         }
-    }
-
-    // Renvoie true si le nombre d'onglet est à sa limite
-    private isSelectionNodeListFull(): boolean {
-        return this.selectionNodes.length >= this.tabLimit;
     }
 
     get isFileSelected(): boolean {
@@ -145,7 +155,7 @@ export class InfoDrawerComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.node) {
-            this.updateSelectionNodeList();
+            this.updateSelectionNodes();
             const entry = this.node.entry;
             if (entry.nodeId) {
                 this.loadNodeInfo(entry.nodeId);
@@ -192,4 +202,5 @@ export class InfoDrawerComponent implements OnInit, OnChanges {
 export class SelectionNode {
     id: string;
     name: string;
+    closeable: boolean;
 }
